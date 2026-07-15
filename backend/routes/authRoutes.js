@@ -1,28 +1,44 @@
-const express = require('express');
-const { body } = require('express-validator');
-const { login, register, getMe, getAllAdmins, updateAdmin } = require('../controllers/authController');
-const { protect, requireRole } = require('../middleware/authMiddleware');
+import express from "express";
+
+import {
+  login,
+  register,
+  getMe,
+  getAllAdmins,
+  updateAdmin,
+} from "../controllers/authController.js";
+
+import {
+  protect,
+  requireRole,
+} from "../middleware/authMiddleware.js";
+
+import {
+  loginValidation,
+  registerValidation,
+} from "../validators/authValidator.js";
 
 const router = express.Router();
 
-// Validation
-const loginValidation = [
-  body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
-  body('password').notEmpty().withMessage('Password is required'),
-];
+// Public Routes
+router.post("/login", loginValidation, login);
+router.post("/register", registerValidation, register);
 
-const registerValidation = [
-  body('name').trim().isLength({ min: 2 }).withMessage('Name must be at least 2 characters'),
-  body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-  body('setupKey').notEmpty().withMessage('Setup key is required'),
-];
+// Protected Routes
+router.get("/me", protect, getMe);
 
-// Routes
-router.post('/login', loginValidation, login);
-router.post('/register', registerValidation, register);
-router.get('/me', protect, getMe);
-router.get('/admins', protect, requireRole('superadmin'), getAllAdmins);
-router.put('/admins/:id', protect, requireRole('superadmin'), updateAdmin);
+router.get(
+  "/admins",
+  protect,
+  requireRole("superadmin"),
+  getAllAdmins
+);
 
-module.exports = router;
+router.put(
+  "/admins/:id",
+  protect,
+  requireRole("superadmin"),
+  updateAdmin
+);
+
+export default router;

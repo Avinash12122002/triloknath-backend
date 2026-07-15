@@ -1,99 +1,138 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const contactFormSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
-      required: [true, 'First name is required'],
+      required: [true, "First name is required"],
       trim: true,
       minlength: 2,
       maxlength: 50,
     },
+
     lastName: {
       type: String,
-      required: [true, 'Last name is required'],
+      required: [true, "Last name is required"],
       trim: true,
       minlength: 2,
       maxlength: 50,
     },
+
     email: {
       type: String,
-      required: [true, 'Email is required'],
+      required: [true, "Email is required"],
       trim: true,
       lowercase: true,
-      match: [/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, 'Please enter a valid email'],
+      match: [
+        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
+        "Please enter a valid email",
+      ],
     },
+
     phoneCode: {
       type: String,
-      default: '+91',
+      required: true,
+      trim: true,
+      default: "+91",
     },
+
     phone: {
       type: String,
-      required: [true, 'Phone number is required'],
+      required: [true, "Phone number is required"],
       trim: true,
+      match: [/^\d{7,15}$/, "Phone number must be between 7 and 15 digits"],
     },
+
     fullPhone: {
       type: String,
       trim: true,
+      index: true,
     },
+
     companyCountry: {
       type: String,
-      required: [true, 'Company country is required'],
+      required: [true, "Company country is required"],
+      trim: true,
     },
+
     hiringCountry: {
       type: String,
-      required: [true, 'Hiring country is required'],
+      required: [true, "Hiring country is required"],
+      trim: true,
     },
+
     services: {
       type: [String],
-      required: [true, 'At least one service must be selected'],
+      required: [true, "At least one service must be selected"],
       validate: {
-        validator: (arr) => arr.length > 0,
-        message: 'Please select at least one service',
+        validator: (arr) => Array.isArray(arr) && arr.length > 0,
+        message: "Please select at least one service.",
       },
     },
+
     headcount: {
       type: String,
-      default: '',
+      trim: true,
+      default: "",
     },
+
     industry: {
       type: String,
-      default: '',
+      trim: true,
+      default: "",
     },
+
     message: {
       type: String,
       trim: true,
       maxlength: 1000,
-      default: '',
+      default: "",
     },
+
     source: {
       type: String,
-      default: 'contact-form',
+      trim: true,
+      default: "contact-form",
     },
+
     pageUrl: {
       type: String,
-      default: '',
+      trim: true,
+      default: "",
     },
+
     submittedAt: {
       type: String,
-      default: '',
+      default: "",
     },
+
     userAgent: {
       type: String,
-      default: '',
+      default: "",
     },
+
     status: {
       type: String,
-      enum: ['New', 'In Progress', 'Contacted', 'Converted', 'Closed'],
-      default: 'New',
+      enum: [
+        "New",
+        "In Progress",
+        "Contacted",
+        "Converted",
+        "Closed",
+      ],
+      default: "New",
     },
+
     notes: {
       type: String,
-      default: '',
+      trim: true,
+      default: "",
     },
+
     assignedTo: {
       type: String,
-      default: '',
+      trim: true,
+      default: "",
     },
   },
   {
@@ -101,11 +140,11 @@ const contactFormSchema = new mongoose.Schema(
   }
 );
 
-// Indexes for faster queries
+// Indexes
 contactFormSchema.index({ email: 1 });
 contactFormSchema.index({ status: 1 });
 contactFormSchema.index({ createdAt: -1 });
 contactFormSchema.index({ companyCountry: 1 });
 contactFormSchema.index({ hiringCountry: 1 });
 
-module.exports = mongoose.model('contactForm', contactFormSchema);
+export default mongoose.model("ContactForm", contactFormSchema);
