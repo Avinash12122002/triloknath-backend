@@ -1,10 +1,10 @@
 const { validationResult } = require('express-validator');
-const Consultation = require('../models/Consultation');
+const contactForm = require('../models/contactForm');
 
-// @desc    Submit consultation from website form
-// @route   POST /api/consultation
+// @desc    Submit contactForm from website form
+// @route   POST /api/contactForm
 // @access  Public
-const createConsultation = async (req, res) => {
+const createContactForm = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -17,7 +17,7 @@ const createConsultation = async (req, res) => {
       message, source, pageUrl, submittedAt, userAgent,
     } = req.body;
 
-    const consultation = await Consultation.create({
+    const contactForm = await ContactForm.create({
       firstName, lastName, email, phoneCode, phone,
       fullPhone: fullPhone || `${phoneCode}${phone}`,
       companyCountry, hiringCountry, services, headcount, industry,
@@ -26,11 +26,11 @@ const createConsultation = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Consultation submitted successfully.',
-      id: consultation._id,
+      message: 'Contact Form submitted successfully.',
+      id: contactForm._id,
     });
   } catch (error) {
-    console.error('Create consultation error:', error);
+    console.error('Create Contact Form error:', error);
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map((e) => e.message);
       return res.status(400).json({ success: false, message: messages.join(', ') });
@@ -39,10 +39,10 @@ const createConsultation = async (req, res) => {
   }
 };
 
-// @desc    Get all consultations (with search, filter, pagination)
-// @route   GET /api/consultation
+// @desc    Get all contactForms (with search, filter, pagination)
+// @route   GET /api/contactForm
 // @access  Private
-const getAllConsultations = async (req, res) => {
+const getAllContactForms = async (req, res) => {
   try {
     const {
       page = 1,
@@ -82,39 +82,39 @@ const getAllConsultations = async (req, res) => {
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
     const skip = (pageNum - 1) * limitNum;
 
-    const [consultations, total] = await Promise.all([
-      Consultation.find(query)
+    const [contactForms, total] = await Promise.all([
+      ContactForm.find(query)
         .sort(sort)
         .skip(skip)
         .limit(limitNum)
         .lean(),
-      Consultation.countDocuments(query),
+      ContactForm.countDocuments(query),
     ]);
 
     res.status(200).json({
       success: true,
-      count: consultations.length,
+      count: contactForms.length,
       total,
       page: pageNum,
       totalPages: Math.ceil(total / limitNum),
-      consultations,
+      contactForms,
     });
   } catch (error) {
-    console.error('Get consultations error:', error);
+    console.error('Get Contact Form error:', error);
     res.status(500).json({ success: false, message: 'Server error.' });
   }
 };
 
-// @desc    Get single consultation
-// @route   GET /api/consultation/:id
+// @desc    Get single contactForm
+// @route   GET /api/contactForm/:id
 // @access  Private
-const getConsultation = async (req, res) => {
+const getContactForm = async (req, res) => {
   try {
-    const consultation = await Consultation.findById(req.params.id);
-    if (!consultation) {
-      return res.status(404).json({ success: false, message: 'Consultation not found.' });
+    const contactForm = await ContactForm.findById(req.params.id);
+    if (!contactForm) {
+      return res.status(404).json({ success: false, message: 'Contact Form not found.' });
     }
-    res.status(200).json({ success: true, consultation });
+    res.status(200).json({ success: true, contactForm });
   } catch (error) {
     if (error.name === 'CastError') {
       return res.status(400).json({ success: false, message: 'Invalid ID format.' });
@@ -123,10 +123,10 @@ const getConsultation = async (req, res) => {
   }
 };
 
-// @desc    Update consultation
-// @route   PUT /api/consultation/:id
+// @desc    Update contactForm
+// @route   PUT /api/contactForm/:id
 // @access  Private
-const updateConsultation = async (req, res) => {
+const updateContactForm = async (req, res) => {
   try {
     const allowedFields = [
       'firstName', 'lastName', 'email', 'phone', 'fullPhone',
@@ -139,17 +139,17 @@ const updateConsultation = async (req, res) => {
       if (req.body[field] !== undefined) updateData[field] = req.body[field];
     });
 
-    const consultation = await Consultation.findByIdAndUpdate(
+    const contactForm = await ContactForm.findByIdAndUpdate(
       req.params.id,
       updateData,
       { new: true, runValidators: true }
     );
 
-    if (!consultation) {
-      return res.status(404).json({ success: false, message: 'Consultation not found.' });
+    if (!contactForm) {
+      return res.status(404).json({ success: false, message: 'Contact Form not found.' });
     }
 
-    res.status(200).json({ success: true, consultation });
+    res.status(200).json({ success: true, contactForm });
   } catch (error) {
     if (error.name === 'CastError') {
       return res.status(400).json({ success: false, message: 'Invalid ID format.' });
@@ -162,16 +162,16 @@ const updateConsultation = async (req, res) => {
   }
 };
 
-// @desc    Delete consultation
-// @route   DELETE /api/consultation/:id
+// @desc    Delete contactForm
+// @route   DELETE /api/contactForm/:id
 // @access  Private
-const deleteConsultation = async (req, res) => {
+const deleteContactForm = async (req, res) => {
   try {
-    const consultation = await Consultation.findByIdAndDelete(req.params.id);
-    if (!consultation) {
-      return res.status(404).json({ success: false, message: 'Consultation not found.' });
+    const contactForm = await ContactForm.findByIdAndDelete(req.params.id);
+    if (!contactForm) {
+      return res.status(404).json({ success: false, message: 'Contact Form data not found.' });
     }
-    res.status(200).json({ success: true, message: 'Consultation deleted successfully.' });
+    res.status(200).json({ success: true, message: 'Contact Form data deleted successfully.' });
   } catch (error) {
     if (error.name === 'CastError') {
       return res.status(400).json({ success: false, message: 'Invalid ID format.' });
@@ -181,7 +181,7 @@ const deleteConsultation = async (req, res) => {
 };
 
 // @desc    Get dashboard stats
-// @route   GET /api/consultation/stats
+// @route   GET /api/contactForm/stats
 // @access  Private
 const getStats = async (req, res) => {
   try {
@@ -204,34 +204,34 @@ const getStats = async (req, res) => {
       recentLeads,
       monthlyTrend,
     ] = await Promise.all([
-      Consultation.countDocuments(),
-      Consultation.countDocuments({ createdAt: { $gte: today, $lt: tomorrow } }),
-      Consultation.countDocuments({ createdAt: { $gte: weekAgo } }),
-      Consultation.aggregate([
+      ContactForm.countDocuments(),
+      ContactForm.countDocuments({ createdAt: { $gte: today, $lt: tomorrow } }),
+      ContactForm.countDocuments({ createdAt: { $gte: weekAgo } }),
+      ContactForm.aggregate([
         { $group: { _id: '$status', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
       ]),
-      Consultation.aggregate([
+      ContactForm.aggregate([
         { $group: { _id: '$hiringCountry', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
         { $limit: 5 },
       ]),
-      Consultation.aggregate([
+      ContactForm.aggregate([
         { $match: { industry: { $ne: '' } } },
         { $group: { _id: '$industry', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
         { $limit: 5 },
       ]),
-      Consultation.aggregate([
+      ContactForm.aggregate([
         { $unwind: '$services' },
         { $group: { _id: '$services', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
       ]),
-      Consultation.find({})
+      ContactForm.find({})
         .sort({ createdAt: -1 })
         .limit(5)
         .select('firstName lastName email companyCountry hiringCountry status createdAt services'),
-      Consultation.aggregate([
+      ContactForm.aggregate([
         {
           $group: {
             _id: {
@@ -266,14 +266,14 @@ const getStats = async (req, res) => {
   }
 };
 
-// @desc    Export consultations as JSON for Excel download
-// @route   GET /api/consultation/export
+// @desc    Export contactForms as JSON for Excel download
+// @route   GET /api/contactForm/export
 // @access  Private
-const exportConsultations = async (req, res) => {
+const exportContactForms = async (req, res) => {
   try {
-    const consultations = await Consultation.find({}).lean().sort({ createdAt: -1 });
+    const contactForms = await ContactForm.find({}).lean().sort({ createdAt: -1 });
 
-    const data = consultations.map((c, i) => ({
+    const data = contactForms.map((c, i) => ({
       '#': i + 1,
       'First Name': c.firstName,
       'Last Name': c.lastName,
@@ -300,11 +300,11 @@ const exportConsultations = async (req, res) => {
 };
 
 module.exports = {
-  createConsultation,
-  getAllConsultations,
-  getConsultation,
-  updateConsultation,
-  deleteConsultation,
+  createContactForm,
+  getAllContactForms,
+  getContactForm,
+  updateContactForm,
+  deleteContactForm,
   getStats,
-  exportConsultations,
+  exportContactForms,
 };

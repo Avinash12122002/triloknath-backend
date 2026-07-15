@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const consultationSchema = new mongoose.Schema(
+const contactFormSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -68,7 +68,7 @@ const consultationSchema = new mongoose.Schema(
     },
     source: {
       type: String,
-      default: 'website-recruitment-consultation',
+      default: 'contact-form',
     },
     pageUrl: {
       type: String,
@@ -102,10 +102,10 @@ const consultationSchema = new mongoose.Schema(
 );
 
 // Indexes for faster queries
-consultationSchema.index({ email: 1 });
-consultationSchema.index({ status: 1 });
-consultationSchema.index({ createdAt: -1 });
-consultationSchema.index({ companyCountry: 1 });
-consultationSchema.index({ hiringCountry: 1 });
+contactFormSchema.index({ email: 1 });
+contactFormSchema.index({ status: 1 });
+contactFormSchema.index({ createdAt: -1 });
+contactFormSchema.index({ companyCountry: 1 });
+contactFormSchema.index({ hiringCountry: 1 });
 
-module.exports = mongoose.model('Consultation', consultationSchema);
+module.exports = mongoose.model('contactForm', contactFormSchema);

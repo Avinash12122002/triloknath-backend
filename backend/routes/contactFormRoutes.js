@@ -1,20 +1,20 @@
 const express = require('express');
 const { body } = require('express-validator');
 const {
-  createConsultation,
-  getAllConsultations,
-  getConsultation,
-  updateConsultation,
-  deleteConsultation,
+  createContactForm,
+  getAllContactForms,
+  getContactForm,
+  updateContactForm,
+  deleteContactForm,
   getStats,
-  exportConsultations,
-} = require('../controllers/consultationController');
+  exportContactForms,
+} = require('../controllers/contactFormController');
 const { protect, requireRole } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 // Validation for form submission
-const consultationValidation = [
+const contactFormValidation = [
   body('firstName').trim().isLength({ min: 2 }).withMessage('First name must be at least 2 characters'),
   body('lastName').trim().isLength({ min: 2 }).withMessage('Last name must be at least 2 characters'),
   body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
@@ -25,14 +25,14 @@ const consultationValidation = [
 ];
 
 // Public route — form submission from WordPress
-router.post('/', consultationValidation, createConsultation);
+router.post('/', contactFormValidation, createContactForm);
 
 // Protected routes — Admin panel
 router.get('/stats', protect, getStats);
-router.get('/export', protect, exportConsultations);
-router.get('/', protect, getAllConsultations);
-router.get('/:id', protect, getConsultation);
-router.put('/:id', protect, requireRole('superadmin', 'admin'), updateConsultation);
-router.delete('/:id', protect, requireRole('superadmin', 'admin'), deleteConsultation);
+router.get('/export', protect, exportContactForms);
+router.get('/', protect, getAllContactForms);
+router.get('/:id', protect, getContactForm);
+router.put('/:id', protect, requireRole('superadmin', 'admin'), updateContactForm);
+router.delete('/:id', protect, requireRole('superadmin', 'admin'), deleteContactForm);
 
 module.exports = router;
