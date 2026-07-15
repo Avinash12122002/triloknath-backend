@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const contactForm = require('../models/contactForm');
+const ContactForm = require('../models/contactForm');
 
 // @desc    Submit contactForm from website form
 // @route   POST /api/contactForm
