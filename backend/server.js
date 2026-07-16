@@ -8,6 +8,7 @@ dotenv.config();
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const contactFormRoutes = require('./routes/contactFormRoutes');
+const consultationRoutes = require('./routes/consultationRoutes');
 
 // Connect to MongoDB
 connectDB();
@@ -81,6 +82,12 @@ app.use(
   '/api/contactForm',
  simpleRateLimit(10000, 15 * 60 * 1000),
   contactFormRoutes
+);
+
+app.use(
+  '/api/consultations',
+  simpleRateLimit(10000, 15 * 60 * 1000),
+  consultationRoutes
 );
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
